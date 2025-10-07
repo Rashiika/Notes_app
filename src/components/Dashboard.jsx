@@ -20,7 +20,7 @@ const Dashboard = () => {
 
     return (
     <div className='text-white'>
-      <h1>Dashboard</h1>
+      <h1 className='text-center '>Dashboard</h1>
       <h2>Welcome, {session?.user?.email}</h2>
       <div>
         <p onClick={handleSignOut} className='hover:cursor-pointer border inline-block px-4 py-3 mt-4'>Sign Out</p>
