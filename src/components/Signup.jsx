@@ -7,7 +7,9 @@ const Signup = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState('');
-    // const [error, setError] = useState('');
+    const [emailError, setEmailError] = useState('')
+    const [passwordError, setPasswordError] = useState('')
+    
 
     const {session, signUpNewUser} = UserAuth();
     const navigate = useNavigate()
@@ -15,8 +17,12 @@ const Signup = () => {
 
     const handleSignUp =async (e) => {
         e.preventDefault();
-        setLoading(true);
-        // setError('');
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            toast.error('Please enter a valid email address.');
+            return;
+        }
+        setLoading(true);  
         try{
             const result = await signUpNewUser(email, password);
 
@@ -31,10 +37,7 @@ const Signup = () => {
         toast.success('Signup successful! Please sign in.');
     setTimeout(() => navigate('/signin'), 1500);
 
-    //   if (result.data?.user) {
-    //     toast.success('Signup successful! Redirecting...');
-    //     setTimeout(() => navigate('/dashboard'), 1500);
-    //   }
+    
     } catch (error) {
       console.error(error);
       toast.error(error.message||'Unexpected error during sign up.');
@@ -45,6 +48,7 @@ const Signup = () => {
  
   return (
     <div>
+        <h1 className="text-center pt-4 text-3xl text-white">Authorization</h1> 
         <form onSubmit={handleSignUp} className='max-w-md m-auto pt-24'>
             <h2 className="font-bold pb-2 text-white">Sign up today!!</h2>
             <p className="text-white">Already have an account? <Link to="/signin">Sign in!</Link></p>
@@ -53,7 +57,7 @@ const Signup = () => {
                 <input onChange={(e)=> setPassword(e.target.value)} className="p-3 mt-6" type="password" placeholder='Password' required/>
                 <button type="submit" disabled={loading} className='mt-6 w-full text-white'>Sign up</button>
                  {loading ? 'Signing up...' : 'Sign up'}
-                {/* {error && <p className='text-red-600 text-center pt-4'>{error}</p>} */}
+                
             </div>
         </form>
     </div>
