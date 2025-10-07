@@ -12,8 +12,8 @@ export const AuthContextProvider = ({ children }) => {
             password: password,
        });
        if(error) {
-        console.error("There was an error signing up the user:", error);
-        return {success : false, error};
+        console.error("There was an error signing up the user:", error.message);
+        return {success : false, error: error.message};
        }
          return {success : true, data};
     };

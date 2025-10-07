@@ -15,16 +15,28 @@ const Signup = () => {
     const handleSignUp =async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError('');
         try{
-            const result = await signUpNewUser(email, password)
-            if(result.success){
-                navigate('/dashboard');
-            }
-        } catch(error){
-            setError("An error occured");
-        }finally{
-            setLoading(false);
+            const result = await signUpNewUser(email, password);
+
+      if (!result.success) {
+        if (result.error.includes('already registered')) {
+          setError('This email is already registered. Please sign in instead.');
+        } else {
+          setError(result.error || 'An error occurred during sign up.');
         }
+        return;
+      }
+      
+      if (result.data?.user) {
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Unexpected error during sign up.');
+    } finally {
+      setLoading(false);
+    }
     }
  
   return (
