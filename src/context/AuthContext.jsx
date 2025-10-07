@@ -23,16 +23,26 @@ export const AuthContextProvider = ({ children }) => {
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: password,
-            });
-            if(error){
+             });
+             if(error){
                 console.error("There was an error signing in the user:", error);
                 return {success : false, error: error.message};
+             }   
+
+             const { data: sessionData } = await supabase.auth.getSession();
+                setSession(sessionData?.session);
+
+                console.log("Sign-in success:", data);
+                return { success: true, data };
+            } catch (err) {
+                console.error("Unexpected error signing in the user:", err);
+                return { success: false, error: err.message };
             }
-            console.log("sign-in success:", data);
-            return {success : true, data};
-        } catch(error) {
-            console.error("There was an error signing in the user:", error);
-        }
+        //     console.log("sign-in success:", data);
+        //     return {success : true, data};
+        // } catch(error) {
+        //     console.error("There was an error signing in the user:", error);
+        // }
     }
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {

@@ -17,8 +17,12 @@ const Signin = () => {
         setLoading(true);
         try{
             const result = await signInUser(email, password)
-            if(result.success){
-                navigate('/dashboard');
+            if (result.success) {
+                console.log("Signed in successfully:", result);
+               
+                setTimeout(() => navigate('/dashboard'), 800);
+            } else {
+                setError(result.error || "Invalid credentials");
             }
         } catch(error){
             setError("An error occured");
