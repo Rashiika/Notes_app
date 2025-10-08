@@ -10,6 +10,9 @@ export const AuthContextProvider = ({ children }) => {
         const { data, error } = await supabase.auth.signUp({
             email: email,
             password: password,
+            options: {
+                emailRedirectTo: "https://notes-app-delta-azure-21.vercel.app/confirm" 
+            }
        });
        if(error) {
         console.error("There was an error signing up the user:", error.message);

@@ -9,7 +9,7 @@ const Confirm = () => {
   useEffect(() => {
     const handleConfirm = async () => {
       try {
-        // Get session after email confirmation
+      
         const { data, error } = await supabase.auth.getSession();
 
         if (error) {
@@ -18,12 +18,12 @@ const Confirm = () => {
           return;
         }
 
-        if (data?.session) {
-          toast.success("Email verified! Redirecting...");
-          setTimeout(() => navigate('/dashboard'), 1500);
+       if (data?.session) {
+        toast.success("Email verified! Redirecting to dashboard...");
+         setTimeout(() => navigate('/dashboard'), 1500);
         } else {
-          toast("Email verified! Please sign in.");
-          setTimeout(() => navigate('/signin'), 1500);
+            toast.success("Email verified! Please sign in.");
+            setTimeout(() => navigate('/signin'), 1500);
         }
       } catch (err) {
         console.error("Error confirming email:", err);
