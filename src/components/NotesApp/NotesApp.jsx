@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
-import { UserAuth } from '../context/AuthContext';
+import { supabase } from '../../supabaseClient';
+import { UserAuth } from '../../context/AuthContext';
+import Sidebar from './SideBar';
 
 const NotesApp = () => {
   const { session } = UserAuth();
@@ -33,14 +34,12 @@ const NotesApp = () => {
   };
 
   // Add new note
-  const addNote = async () => {
-    if (!title && !content) return;
-
+   const handleAddNote = async () => {
     const { data, error } = await supabase.from('notes').insert([
       {
         user_id: session.user.id,
-        title,
-        content,
+        title: 'Untitled',
+        content: '',
       },
     ]);
 
@@ -48,8 +47,8 @@ const NotesApp = () => {
     else {
       setNotes([data[0], ...notes]);
       setSelectedNote(data[0]);
-      setTitle('');
-      setContent('');
+      setTitle(data[0].title);
+      setContent(data[0].content);
     }
   };
 
@@ -75,14 +74,24 @@ const NotesApp = () => {
     if (error) console.error(error);
     else {
       setNotes(notes.filter((note) => note.id !== id));
-      if (selectedNote?.id === id) setSelectedNote(null);
+      if (selectedNote?.id === id) {
+        setSelectedNote(null);
+        setTitle('');
+        setContent('');
+      }  
     }
   };
 
   return (
     <div className="flex h-screen text-white bg-gray-900">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-800 p-4 overflow-y-auto">
+      <Sidebar
+        notes={notes}
+        selectedNote={selectedNote}
+        onAddNote={handleAddNote}
+        onSelectNote={handleSelectNote}
+      />
+      {/* <div className="w-64 bg-gray-800 p-4 overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">My Notes</h2>
         <button
           onClick={() => {
@@ -108,38 +117,44 @@ const NotesApp = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Main Panel */}
       <div className="flex-1 p-6">
-        <input
-          className="w-full p-2 mb-4 text-black"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <textarea
-          className="w-full h-64 p-2 text-black"
-          placeholder="Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <div className="mt-4 space-x-2">
-          <button
-            onClick={selectedNote ? updateNote : addNote}
-            className="bg-blue-500 p-2 rounded"
-          >
-            {selectedNote ? 'Update Note' : 'Add Note'}
-          </button>
-          {selectedNote && (
-            <button
-              onClick={() => deleteNote(selectedNote.id)}
-              className="bg-red-500 p-2 rounded"
-            >
-              Delete Note
-            </button>
-          )}
-        </div>
+        {selectedNote ? (
+          <>
+            <input
+              className="w-full p-2 mb-4 text-black"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <textarea
+              className="w-full h-64 p-2 text-black"
+              placeholder="Content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+            <div className="mt-4 space-x-2">
+              <button
+                onClick={updateNote}
+                className="bg-blue-500 p-2 rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => deleteNote(selectedNote.id)}
+                className="bg-red-500 p-2 rounded"
+              >
+                Delete
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="text-gray-400 text-center mt-20">
+            Select a note or create a new one
+          </div>
+        )}
       </div>
     </div>
   );

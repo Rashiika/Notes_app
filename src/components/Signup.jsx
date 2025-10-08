@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 const Signup = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState('');
+    const [loading, setLoading] = useState(false);
     const [emailError, setEmailError] = useState('')
     const [passwordError, setPasswordError] = useState('')
     
@@ -15,27 +15,49 @@ const Signup = () => {
     const navigate = useNavigate()
     console.log(session);
 
+    const validateEmail = (value) => {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!pattern.test(value)) {
+      setEmailError('Invalid email format')
+    } else {
+      setEmailError('')
+    }
+    setEmail(value)
+  }
+
+  
+  const validatePassword = (value) => {
+    if (value.trim() === '') {
+      setPasswordError('Password cannot be empty')
+    } else {
+      setPasswordError('')
+    }
+    setPassword(value)
+  }
+
     const handleSignUp =async (e) => {
         e.preventDefault();
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(email)) {
-            toast.error('Please enter a valid email address.');
-            return;
+        
+        if (emailError || passwordError || !email || !password) {
+            toast.error('Please fix the errors before signing in')
+            return
         }
+
         setLoading(true);  
         try{
             const result = await signUpNewUser(email, password);
 
-      if (!result.success) {
-        if (result.error.includes('already registered')) {
+         if (!result.success) {
+         if (result.error.includes('already registered')) {
           toast.error('This email is already registered. Please sign in instead.');
-        } else {
+         } else {
           toast.error(result.error || 'An error occurred during sign up.');
         }
         return;
       }
-        toast.success('Signup successful! Please sign in.');
-    setTimeout(() => navigate('/signin'), 1500);
+       toast.success('Signup successful! Please verify your email before signing in.');
+
+    // setTimeout(() => navigate('/signin'), 1500);
 
     
     } catch (error) {
@@ -53,10 +75,10 @@ const Signup = () => {
             <h2 className="font-bold pb-2 text-white">Sign up today!!</h2>
             <p className="text-white">Already have an account? <Link to="/signin">Sign in!</Link></p>
             <div className='flex flex-col py-4'>
-                <input onChange={(e)=> setEmail(e.target.value)} className="p-3 mt-6" type="email" placeholder='Email' required/>
-                <input onChange={(e)=> setPassword(e.target.value)} className="p-3 mt-6" type="password" placeholder='Password' required/>
-                <button type="submit" disabled={loading} className='mt-6 w-full text-white'>Sign up</button>
-                 {loading ? 'Signing up...' : 'Sign up'}
+                <input onChange={(e)=> validateEmail(e.target.value)} className="p-3 mt-6" type="email" placeholder='Email' required/>
+                <input onChange={(e)=> validatePassword(e.target.value)} className="p-3 mt-6" type="password" placeholder='Password' required/>
+                <button type="submit" disabled={loading || emailError || passwordError} className='mt-6 w-full text-white'>{loading ? 'Signing up...' : 'Sign up'}</button>
+                {loading ? 'Signing up...' : 'Sign up'}
                 
             </div>
         </form>
