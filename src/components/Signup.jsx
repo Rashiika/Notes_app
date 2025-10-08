@@ -57,8 +57,6 @@ const Signup = () => {
       }
        toast.success('Signup successful! Please verify your email before signing in.');
 
-    // setTimeout(() => navigate('/signin'), 1500);
-
     
     } catch (error) {
       console.error(error);

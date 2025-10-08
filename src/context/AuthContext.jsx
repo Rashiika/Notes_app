@@ -41,11 +41,6 @@ export const AuthContextProvider = ({ children }) => {
                 console.error("Unexpected error signing in the user:", err);
                 return { success: false, error: err.message };
             }
-        //     console.log("sign-in success:", data);
-        //     return {success : true, data};
-        // } catch(error) {
-        //     console.error("There was an error signing in the user:", error);
-        // }
     }
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
